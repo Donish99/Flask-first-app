@@ -15,7 +15,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db
+        db = get_db()
         error = None
 
         if not username:
@@ -23,10 +23,10 @@ def register():
         elif not password:
             error = 'Password is required.'
         elif db.execute(
-            'SEELECT id FROM user WHERE username = ?', (username,)
+                'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
             error = 'User {} is already registered.'.format(username)
-        
+
         if error is None:
             db.execute(
                 'INSERT INTO user (username, password) VALUES (?, ?)',
@@ -34,7 +34,7 @@ def register():
             )
             db.commit()
             return redirect(url_for('auth.login'))
-        
+
         flash(error)
 
     return render_template('auth/register.html')
@@ -84,7 +84,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-def login_required(view):
+def     login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
